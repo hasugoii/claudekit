@@ -1,0 +1,121 @@
+{
+  "meta": {
+    "schema_version": "1.0.0",
+    "claudekit_version": "1.1.0",
+    "created_at": "2024-01-01T00:00:00Z",
+    "updated_at": "2024-01-01T00:00:00Z"
+  },
+  "project": {
+    "name": "my-awesome-app",
+    "description": "A modern web application",
+    "type": "fullstack",
+    "status": "development",
+    "repository": "https://github.com/username/my-awesome-app",
+    "urls": {
+      "local": "http://localhost:3000",
+      "staging": "https://staging.myapp.com",
+      "production": "https://myapp.com"
+    }
+  },
+  "tech_stack": {
+    "frontend": {
+      "framework": "Next.js 14",
+      "language": "TypeScript",
+      "ui_library": "shadcn/ui",
+      "state_management": "Zustand",
+      "styling": "TailwindCSS"
+    },
+    "backend": {
+      "framework": "Next.js API Routes",
+      "language": "TypeScript",
+      "runtime": "Node.js 20"
+    },
+    "database": {
+      "type": "PostgreSQL",
+      "orm": "Prisma",
+      "name": "myapp_db"
+    },
+    "infrastructure": {
+      "hosting": "Vercel",
+      "cdn": "Vercel Edge",
+      "ci_cd": "GitHub Actions"
+    }
+  },
+  "database_schema": {
+    "tables": [
+      {
+        "name": "User",
+        "description": "User accounts",
+        "columns": [
+          { "name": "id", "type": "cuid", "primary": true },
+          { "name": "email", "type": "string", "nullable": false },
+          { "name": "name", "type": "string", "nullable": true },
+          { "name": "createdAt", "type": "datetime", "nullable": false },
+          { "name": "updatedAt", "type": "datetime", "nullable": false }
+        ]
+      }
+    ],
+    "relationships": []
+  },
+  "api_endpoints": [
+    {
+      "method": "GET",
+      "path": "/api/users",
+      "description": "List all users",
+      "auth_required": true,
+      "roles": ["admin"]
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/login",
+      "description": "User login",
+      "auth_required": false
+    }
+  ],
+  "features": [
+    {
+      "name": "User Authentication",
+      "status": "implemented",
+      "spec_file": "docs/specs/auth_spec.md",
+      "files": ["src/app/api/auth/[...nextauth]/route.ts"]
+    }
+  ],
+  "knowledge_items": {
+    "patterns": [
+      {
+        "name": "API Response Format",
+        "description": "All APIs return { success, data, error }",
+        "example_file": "src/lib/api-response.ts"
+      }
+    ],
+    "gotchas": [
+      {
+        "issue": "Prisma client regeneration",
+        "cause": "Schema changes require client regeneration",
+        "solution": "Run 'npx prisma generate' after schema changes",
+        "affected_files": ["prisma/schema.prisma"]
+      }
+    ],
+    "conventions": [
+      {
+        "area": "Naming",
+        "convention": "Use camelCase for variables, PascalCase for components",
+        "example": "const userName; function UserCard()"
+      }
+    ]
+  },
+  "environment": {
+    "variables": [
+      { "name": "DATABASE_URL", "description": "PostgreSQL connection string", "required": true },
+      { "name": "NEXTAUTH_SECRET", "description": "NextAuth.js secret", "required": true },
+      { "name": "NEXTAUTH_URL", "description": "App URL", "required": true, "example": "http://localhost:3000" }
+    ],
+    "scripts": {
+      "dev": "next dev",
+      "build": "next build",
+      "test": "jest",
+      "lint": "eslint ."
+    }
+  },
+  "updated_at": "2024-01-01T00:00:00Z"
+}
