@@ -1,0 +1,107 @@
+{
+  "$schema": "../schemas/safety.schema.json",
+  "version": "1.0.0",
+  "description": "ClaudeKit Safety Configuration",
+  
+  "dangerous_commands": {
+    "description": "Commands that require confirmation before execution",
+    "patterns": [
+      "rm -rf",
+      "rm -r",
+      "del /s /q",
+      "rmdir /s /q",
+      "DROP DATABASE",
+      "DROP TABLE",
+      "TRUNCATE TABLE",
+      "DELETE FROM .* WHERE 1=1",
+      "git push --force",
+      "git push -f",
+      "git reset --hard",
+      "git clean -fd",
+      "chmod 777",
+      "chmod -R",
+      "chown -R",
+      "curl .* \| bash",
+      "wget .* \| sh",
+      "npm publish",
+      "docker system prune -a",
+      "kubectl delete namespace",
+      "terraform destroy"
+    ]
+  },
+  
+  "protected_files": {
+    "description": "Files that should never be read, modified, or committed",
+    "patterns": [
+      ".env",
+      ".env.*",
+      "*.env",
+      "credentials.json",
+      "secrets.yaml",
+      "secrets.yml",
+      "*.pem",
+      "*.key",
+      "*.p12",
+      "*.pfx",
+      "id_rsa",
+      "id_ed25519",
+      "id_dsa",
+      ".npmrc",
+      ".pypirc",
+      "kubeconfig",
+      "service-account.json",
+      "firebase-adminsdk*.json"
+    ]
+  },
+  
+  "sensitive_patterns": {
+    "description": "Content patterns that should never be logged or displayed",
+    "patterns": [
+      "(?i)(api[_-]?key|apikey)\s*[:=]\s*['\"]?[a-zA-Z0-9_-]{20,}",
+      "(?i)(secret|password|passwd|pwd)\s*[:=]\s*['\"]?[^\s'\"]{8,}",
+      "(?i)(token|auth)\s*[:=]\s*['\"]?[a-zA-Z0-9_.-]{20,}",
+      "(?i)bearer\s+[a-zA-Z0-9_.-]{20,}",
+      "-----BEGIN.*PRIVATE KEY-----",
+      "(?i)mongodb(\+srv)?://[^:]+:[^@]+@",
+      "(?i)postgres://[^:]+:[^@]+@",
+      "(?i)mysql://[^:]+:[^@]+@"
+    ]
+  },
+  
+  "agent_restrictions": {
+    "explorer": {
+      "description": "Read-only agent for codebase exploration",
+      "allowed_tools": ["Read", "Glob", "Grep"]
+    },
+    "security": {
+      "description": "Security agent with limited write access",
+      "allowed_tools": ["Read", "Glob", "Grep", "Write", "Edit"]
+    },
+    "pentester": {
+      "description": "Pentester agent - no production access",
+      "allowed_tools": ["Read", "Glob", "Grep", "Bash"],
+      "denied_patterns": ["--prod", "production", "api.*.com"]
+    }
+  },
+  
+  "permission_profiles": {
+    "readonly": {
+      "description": "Read-only mode for code review",
+      "allow": ["Read", "Glob", "Grep"]
+    },
+    "safe": {
+      "description": "Safe mode - no dangerous commands",
+      "allow": ["Read", "Glob", "Grep", "Write", "Edit", "Bash(npm:*)", "Bash(git status:*)", "Bash(git diff:*)"]
+    },
+    "development": {
+      "description": "Development mode - most operations allowed",
+      "allow": ["Read", "Write(*)", "Edit(*)", "Glob", "Grep", "Bash(npm:*)", "Bash(git:*)", "Bash(node:*)", "Bash(npx:*)"]
+    },
+    "admin": {
+      "description": "Full access - use with caution",
+      "allow": ["*"]
+    }
+  },
+  
+  "default_profile": "development"
+}
