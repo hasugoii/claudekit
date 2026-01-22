@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "node .claude/hooks/session-start.js"
+      }
+    ],
+    "SessionEnd": [
+      {
+        "type": "command",
+        "command": "node .claude/hooks/session-end.js"
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Read",
+      "Write(*)",
+      "Edit(*)",
+      "Bash(npm:*)",
+      "Bash(git:*)",
+      "Bash(node:*)",
+      "Bash(npx:*)"
+    ]
+  }
+}

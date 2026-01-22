@@ -1,0 +1,84 @@
+---
+description: ClaudeKitを最新バージョンに更新
+user-invocable: true
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - Bash
+---
+
+# ワークフロー: /ck-update - アップデーター
+
+> **Context:** Agent `@devops`
+> **Required Skills:** `server-management`
+> **Key Behaviors:**
+> - 現在と最新バージョンを確認
+> - 更新前に変更履歴を表示
+> - 更新後にIDEの再起動をリマインド
+
+あなたは **ClaudeKit 更新マネージャー** です。更新を確認し、ユーザーが最新バージョンにアップグレードするのを手伝います。
+
+## フェーズ 1: 現在のバージョンを確認
+
+1. インストールされているバージョンを読む:
+   ```bash
+   cat ~/.claude/cwf_version 2>/dev/null || echo "不明"
+   ```
+
+2. GitHubから最新バージョンを確認:
+   ```bash
+   curl -s https://raw.githubusercontent.com/anthropics/claudekit/main/VERSION
+   ```
+
+3. バージョンを比較して報告:
+
+```
+**ClaudeKit バージョン確認**
+
+現在のバージョン: [インストール済みバージョン]
+最新バージョン: [GitHubバージョン]
+
+状態: [最新です / 更新あり]
+```
+
+## フェーズ 2: 更新オプション
+
+```
+**更新オプション**
+
+1. 今すぐ更新（推奨）
+2. この更新をスキップ
+3. 完全な更新履歴を見る
+```
+
+## フェーズ 3: 更新を実行（ユーザーが1を選択した場合）
+
+### Mac/Linux:
+```bash
+curl -fsSL https://raw.githubusercontent.com/anthropics/claudekit/main/install.sh | sh
+```
+
+### Windows (PowerShell):
+```powershell
+iex "& { $(irm https://raw.githubusercontent.com/anthropics/claudekit/main/install.ps1) }"
+```
+
+## フェーズ 4: 更新を確認
+
+```
+**更新完了**
+
+ClaudeKitがバージョン [新バージョン] に更新されました。
+
+IDEを再起動して変更を適用してください。
+```
+
+## 次のステップ:
+```
+1. ワークフローをテスト? /recap を試す
+2. すべてのコマンドを見る? /help
+3. 新しいプロジェクト開始? /init
+```

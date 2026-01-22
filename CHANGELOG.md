@@ -2,6 +2,29 @@
 
 All notable changes to ClaudeKit will be documented in this file.
 
+## [1.2.0] - 2025-01-22
+
+### Added
+- Full Claude Code compatibility with native directory structure
+- Hooks system for context persistence (session-start.js, session-end.js)
+- Proper frontmatter for all commands, agents, and skills
+
+### Changed
+- **BREAKING:** Restructured to use Claude Code native paths:
+  - Commands: `~/.claude/commands/[lang]/`
+  - Agents: `~/.claude/agents/`
+  - Skills: `~/.claude/skills/`
+  - Hooks: `~/.claude/hooks/`
+- Workflows converted to slash commands with frontmatter
+- Skills converted to flat files with frontmatter
+- Agents updated with Claude Code frontmatter (model, allowed-tools)
+- Install scripts updated for new structure
+
+### Fixed
+- Commands now appear in Claude Code's `/` menu
+- Agents now invokable with `@agent-name`
+- Skills auto-load based on context
+
 ## [1.1.0] - 2025-01-21
 
 ### Added

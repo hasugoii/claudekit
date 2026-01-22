@@ -18,18 +18,20 @@ CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 # Configuration
-REPO_BASE="https://raw.githubusercontent.com/user/claudekit/main"
+REPO_BASE="https://raw.githubusercontent.com/hasugoii/claudekit/main"
 CLAUDE_DIR="$HOME/.claude"
-INSTALL_DIR="$CLAUDE_DIR/claudekit"
-WORKFLOWS_DIR="$CLAUDE_DIR/workflows"
-VERSION="1.1.0"
+COMMANDS_DIR="$CLAUDE_DIR/commands"
+AGENTS_DIR="$CLAUDE_DIR/agents"
+SKILLS_DIR="$CLAUDE_DIR/skills"
+HOOKS_DIR="$CLAUDE_DIR/hooks"
+VERSION="1.2.0"
 
-# Workflow files
-WORKFLOW_FILES=(
-    "README.md" "ak-update.md" "audit.md" "brainstorm.md" "cloudflare-tunnel.md"
+# Command files (workflows converted to commands)
+COMMAND_FILES=(
+    "ck-update.md" "audit.md" "brainstorm.md" "cloudflare-tunnel.md"
     "code.md" "config.md" "customize.md" "debug.md" "deploy.md"
     "init.md" "next.md" "plan.md" "recap.md" "refactor.md"
-    "rollback.md" "run.md" "save_brain.md" "test.md" "visualize.md" "uninstall.md"
+    "rollback.md" "run.md" "save-brain.md" "test.md" "visualize.md" "uninstall.md"
 )
 
 # Agent files
@@ -40,9 +42,21 @@ AGENT_FILES=(
     "performance.md" "security.md" "seo.md" "tester.md"
 )
 
-# Schema files
-SCHEMA_FILES=(
-    "brain.schema.json" "session.schema.json" "preferences.schema.json"
+# Skill files (40 skills)
+SKILL_FILES=(
+    "api-patterns.md" "app-builder.md" "architecture.md" "bash-linux.md" "behavioral-modes.md"
+    "brainstorming.md" "clean-code.md" "code-review-checklist.md" "database-design.md" "deployment-procedures.md"
+    "docker-expert.md" "documentation-templates.md" "frontend-design.md" "game-development.md" "geo-fundamentals.md"
+    "i18n-localization.md" "lint-and-validate.md" "mcp-builder.md" "mobile-design.md" "nestjs-expert.md"
+    "nextjs-expert.md" "nodejs-best-practices.md" "parallel-agents.md" "performance-profiling.md" "plan-writing.md"
+    "powershell-windows.md" "prisma-expert.md" "python-patterns.md" "react-patterns.md" "red-team-tactics.md"
+    "seo-fundamentals.md" "server-management.md" "systematic-debugging.md" "tailwind-patterns.md" "tdd-workflow.md"
+    "testing-patterns.md" "typescript-expert.md" "ui-ux-pro-max.md" "vulnerability-scanner.md" "webapp-testing.md"
+)
+
+# Hook files
+HOOK_FILES=(
+    "session-start.js" "session-end.js"
 )
 
 print_header() {
@@ -105,33 +119,43 @@ install_claudekit() {
     # Create directories
     echo "Creating directories..."
     mkdir -p "$CLAUDE_DIR"
-    mkdir -p "$INSTALL_DIR"
-    mkdir -p "$WORKFLOWS_DIR"
-    mkdir -p "$INSTALL_DIR/agents"
-    mkdir -p "$INSTALL_DIR/skills"
-    mkdir -p "$INSTALL_DIR/schemas"
+    mkdir -p "$COMMANDS_DIR/$LANG"
+    mkdir -p "$AGENTS_DIR"
+    mkdir -p "$SKILLS_DIR"
+    mkdir -p "$HOOKS_DIR"
 
-    # Download workflows
-    echo -e "\nDownloading workflows ($LANG)..."
-    for file in "${WORKFLOW_FILES[@]}"; do
-        download_file "$REPO_BASE/workflows/$LANG/$file" "$WORKFLOWS_DIR/$file"
+    # Download commands (language specific)
+    echo -e "\nDownloading commands ($LANG)..."
+    for file in "${COMMAND_FILES[@]}"; do
+        download_file "$REPO_BASE/.claude/commands/$LANG/$file" "$COMMANDS_DIR/$LANG/$file"
     done
 
     # Download agents
     echo -e "\nDownloading agents..."
     for agent in "${AGENT_FILES[@]}"; do
-        download_file "$REPO_BASE/agents/$agent" "$INSTALL_DIR/agents/$agent"
+        download_file "$REPO_BASE/.claude/agents/$agent" "$AGENTS_DIR/$agent"
     done
 
-    # Download schemas
-    echo -e "\nDownloading schemas..."
-    for schema in "${SCHEMA_FILES[@]}"; do
-        download_file "$REPO_BASE/schemas/$schema" "$INSTALL_DIR/schemas/$schema"
+    # Download skills
+    echo -e "\nDownloading skills..."
+    for skill in "${SKILL_FILES[@]}"; do
+        download_file "$REPO_BASE/.claude/skills/$skill" "$SKILLS_DIR/$skill"
     done
 
-    # Download CLAUDE.md
-    echo -e "\nDownloading CLAUDE.md..."
-    download_file "$REPO_BASE/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md"
+    # Download hooks
+    echo -e "\nDownloading hooks..."
+    for hook in "${HOOK_FILES[@]}"; do
+        download_file "$REPO_BASE/.claude/hooks/$hook" "$HOOKS_DIR/$hook"
+    done
+    chmod +x "$HOOKS_DIR"/*.js 2>/dev/null
+
+    # Download settings.json (merge with existing if present)
+    echo -e "\nConfiguring settings..."
+    if [ ! -f "$CLAUDE_DIR/settings.json" ]; then
+        download_file "$REPO_BASE/.claude/settings.json" "$CLAUDE_DIR/settings.json"
+    else
+        echo -e "  ${YELLOW}⚠${NC} settings.json exists, skipping (manual merge may be needed)"
+    fi
 
     # Save language preference
     echo -n "$LANG" > "$CLAUDE_DIR/claudekit_language"
@@ -146,15 +170,18 @@ show_success() {
 
 ✅ ClaudeKit installed successfully!
 
-📁 Installation directory: $CLAUDE_DIR
-📋 Workflows directory: $WORKFLOWS_DIR
+📁 Installation:
+   Commands: $COMMANDS_DIR/$LANG/
+   Agents:   $AGENTS_DIR/
+   Skills:   $SKILLS_DIR/
+   Hooks:    $HOOKS_DIR/
 
 🚀 Quick Start:
    1. Open Claude Code in VSCode
    2. Type /recap to get started
-   3. Use /help to see all commands
+   3. Use /init to start a new project
 
-📚 Available commands:
+📚 Available commands (slash commands):
    /init      - Initialize new project
    /plan      - Plan a feature
    /code      - Write code
@@ -163,7 +190,14 @@ show_success() {
    /deploy    - Deploy application
    /save-brain - Save context
 
-⚠️  IMPORTANT: Restart Claude Code to load the new workflows!
+🤖 Available agents (use @agent):
+   @frontend  - React/Next.js expert
+   @backend   - Node.js/API expert
+   @architect - System design
+   @security  - Security expert
+   @devops    - Docker/CI-CD
+
+⚠️  IMPORTANT: Restart Claude Code to load ClaudeKit!
 
 EOF
     echo -e "${NC}"
