@@ -39,7 +39,7 @@ Bạn đã từng gặp những tình huống này khi code với AI chưa?
 
 ## ClaudeKit là gì?
 
-ClaudeKit là **Bộ Nâng Cấp cho Claude Code** (VSCode Extension) giúp biến đổi trải nghiệm code với AI:
+ClaudeKit là **Bộ Nâng Cấp cho Claude Code** giúp biến đổi trải nghiệm code với AI:
 
 - **20 Slash Commands** - Workflows có cấu trúc như `/plan`, `/code`, `/debug`, `/deploy`
 - **16 AI Agents** - Chuyên gia như `@frontend`, `@backend`, `@security`, `@devops`
@@ -50,7 +50,46 @@ ClaudeKit là **Bộ Nâng Cấp cho Claude Code** (VSCode Extension) giúp bi�
 
 ---
 
+## Nền Tảng Hỗ Trợ
+
+ClaudeKit được thiết kế để hoạt động với **nhiều AI coding assistants** trên các editors khác nhau:
+
+### AI Assistants
+
+| AI Assistant | Extension | Trạng Thái |
+|--------------|-----------|------------|
+| **Claude Code** | VSCode Extension | ✅ Hỗ trợ đầy đủ |
+| **Google Antigravity** | VSCode Extension (Gemini) | ✅ Hỗ trợ đầy đủ |
+
+> ClaudeKit sử dụng cùng cấu trúc thư mục (`~/.claude/`) mà cả Claude Code và Antigravity extensions đều nhận diện, giúp nó tương thích với cả hai AI assistants!
+
+### Editors (Dựa trên VSCode)
+
+| Editor | Trạng Thái | Ghi Chú |
+|--------|------------|---------|
+| **VSCode** | ✅ Hỗ trợ đầy đủ | Extensions chính thức có sẵn |
+| **Cursor** | ✅ Hỗ trợ đầy đủ | AI editor dựa trên VSCode |
+| **Windsurf** | ✅ Hỗ trợ đầy đủ | Editor dựa trên VSCode |
+| **VSCodium** | ✅ Hỗ trợ đầy đủ | VSCode mã nguồn mở |
+| **Theia** | ✅ Tương thích | IDEs dựa trên Eclipse Theia |
+| **code-server** | ✅ Tương thích | VSCode trên trình duyệt |
+| **GitHub Codespaces** | ✅ Tương thích | Phát triển trên cloud |
+
+> **Tóm lại:** Nếu bạn sử dụng **Claude Code** hoặc **Antigravity** extension trên bất kỳ editor dựa trên VSCode nào, ClaudeKit sẽ hoạt động với bạn!
+>
+> **Dự án Anh Em:** Xem [AntiKit](https://github.com/hasugoii/antikit) - bộ enhancement kit gốc cho Google Antigravity mà ClaudeKit được chuyển đổi từ đó.
+
+---
+
 ## Bắt Đầu Nhanh
+
+### Yêu Cầu Trước
+
+> **Quan trọng:** Bạn phải cài đặt một trong các AI coding extensions sau TRƯỚC KHI cài ClaudeKit:
+> - [Claude Code](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code) - Extension chính thức của Anthropic
+> - [Antigravity](https://marketplace.visualstudio.com/items?itemName=anthropic.antigravity) - Extension Gemini của Google
+>
+> ClaudeKit nâng cấp các extensions này - nó KHÔNG hoạt động độc lập.
 
 ### Cài Đặt
 
@@ -240,6 +279,6 @@ MIT License - Tự do sử dụng, chỉnh sửa và phân phối.
 
 <p align="center">
   <sub>
-    <em>claude code kit, vibe coding, claude code enhancement, ai coding assistant, agentic development, autonomous ai agents, ai pair programming, claude code vscode, vibe code with claude, claude code tiếng việt</em>
+    <em>claude code kit, vibe coding, claude code enhancement, ai coding assistant, agentic development, autonomous ai agents, ai pair programming, claude code vscode, vibe code with claude, claude code tiếng việt, cursor ai extension, windsurf coding, antigravity compatible</em>
   </sub>
 </p>

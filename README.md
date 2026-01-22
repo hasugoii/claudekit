@@ -39,7 +39,7 @@ Ever felt like this with AI coding assistants?
 
 ## What is ClaudeKit?
 
-ClaudeKit is an **Enhancement Kit for Claude Code** (VSCode Extension) that transforms your AI coding experience with:
+ClaudeKit is an **Enhancement Kit for Claude Code** that transforms your AI coding experience with:
 
 - **20 Slash Commands** - Structured workflows like `/plan`, `/code`, `/debug`, `/deploy`
 - **16 AI Agents** - Specialists like `@frontend`, `@backend`, `@security`, `@devops`
@@ -50,7 +50,46 @@ ClaudeKit is an **Enhancement Kit for Claude Code** (VSCode Extension) that tran
 
 ---
 
+## Supported Platforms
+
+ClaudeKit is designed to work with **multiple AI coding assistants** across various editors:
+
+### AI Assistants
+
+| AI Assistant | Extension | Status |
+|--------------|-----------|--------|
+| **Claude Code** | VSCode Extension | ✅ Full Support |
+| **Google Antigravity** | VSCode Extension (Gemini) | ✅ Full Support |
+
+> ClaudeKit uses the same directory structure (`~/.claude/`) that both Claude Code and Antigravity extensions recognize, making it compatible with both AI assistants!
+
+### Editors (VSCode-based)
+
+| Editor | Status | Notes |
+|--------|--------|-------|
+| **VSCode** | ✅ Full Support | Official extensions available |
+| **Cursor** | ✅ Full Support | VSCode-based AI editor |
+| **Windsurf** | ✅ Full Support | VSCode-based editor |
+| **VSCodium** | ✅ Full Support | Open-source VSCode |
+| **Theia** | ✅ Compatible | Eclipse Theia-based IDEs |
+| **code-server** | ✅ Compatible | VSCode in browser |
+| **GitHub Codespaces** | ✅ Compatible | Cloud development |
+
+> **TL;DR:** If you use **Claude Code** or **Antigravity** extension on any VSCode-based editor, ClaudeKit will work for you!
+>
+> **Sister Project:** Check out [AntiKit](https://github.com/hasugoii/antikit) - the original enhancement kit for Google Antigravity that ClaudeKit was adapted from.
+
+---
+
 ## Quick Start
+
+### Prerequisites
+
+> **Important:** You must install one of these AI coding extensions BEFORE installing ClaudeKit:
+> - [Claude Code](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code) - Anthropic's official extension
+> - [Antigravity](https://marketplace.visualstudio.com/items?itemName=anthropic.antigravity) - Google's Gemini extension
+>
+> ClaudeKit enhances these extensions - it does NOT work standalone.
 
 ### Installation
 
@@ -240,6 +279,6 @@ MIT License - Free to use, modify, and distribute.
 
 <p align="center">
   <sub>
-    <em>claude code kit, vibe coding, claude code enhancement, ai coding assistant, agentic development, autonomous ai agents, ai pair programming, claude code vscode, vibe code with claude</em>
+    <em>claude code kit, vibe coding, claude code enhancement, ai coding assistant, agentic development, autonomous ai agents, ai pair programming, claude code vscode, vibe code with claude, cursor ai extension, windsurf coding, vscode ai assistant, claude code cursor, antigravity compatible</em>
   </sub>
 </p>
