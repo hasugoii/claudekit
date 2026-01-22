@@ -103,56 +103,145 @@ if (fs.existsSync(sessionPath)) {
 }
 
 // ============================================
-// 5. Smart Agent Suggestions (based on project)
+// 5. Smart Agent Auto-Loading (based on project + task)
 // ============================================
-function detectProjectContext() {
-  const suggestions = [];
-  const cwd = process.cwd();
 
-  // Detect React/Next.js
+// Global agents directory (ClaudeKit installation)
+const globalAgentsDir = path.join(process.env.HOME || process.env.USERPROFILE, '.claude', 'agents');
+// Project-level agents (if exists)
+const projectAgentsDir = path.join(process.cwd(), '.claude', 'agents');
+
+function loadAgentInstructions(agentName) {
+  // Try project-level first, then global
+  const projectPath = path.join(projectAgentsDir, `${agentName}.md`);
+  const globalPath = path.join(globalAgentsDir, `${agentName}.md`);
+
+  let agentPath = null;
+  if (fs.existsSync(projectPath)) {
+    agentPath = projectPath;
+  } else if (fs.existsSync(globalPath)) {
+    agentPath = globalPath;
+  }
+
+  if (agentPath) {
+    try {
+      let content = fs.readFileSync(agentPath, 'utf8');
+      // Remove frontmatter if exists
+      content = content.replace(/^---[\s\S]*?---\n*/m, '');
+      return content;
+    } catch (e) {
+      return null;
+    }
+  }
+  return null;
+}
+
+function detectAndLoadAgents() {
+  const cwd = process.cwd();
+  const loadedAgents = [];
+  const agentInstructions = [];
+
+  // Detect project type and auto-load appropriate agents
   if (fs.existsSync(path.join(cwd, 'package.json'))) {
     try {
       const pkg = JSON.parse(fs.readFileSync(path.join(cwd, 'package.json'), 'utf8'));
       const deps = { ...pkg.dependencies, ...pkg.devDependencies };
 
-      if (deps['react'] || deps['next']) {
-        suggestions.push('@frontend - React/Next.js expert');
+      // Frontend project
+      if (deps['react'] || deps['next'] || deps['vue'] || deps['angular']) {
+        const instructions = loadAgentInstructions('frontend');
+        if (instructions) {
+          loadedAgents.push('frontend');
+          agentInstructions.push(instructions);
+        }
       }
-      if (deps['express'] || deps['fastify'] || deps['nestjs']) {
-        suggestions.push('@backend - Node.js API expert');
+
+      // Backend project
+      if (deps['express'] || deps['fastify'] || deps['nestjs'] || deps['koa']) {
+        const instructions = loadAgentInstructions('backend');
+        if (instructions) {
+          loadedAgents.push('backend');
+          agentInstructions.push(instructions);
+        }
       }
-      if (deps['prisma'] || deps['typeorm'] || deps['mongoose']) {
-        suggestions.push('@database - Database expert');
+
+      // Database project
+      if (deps['prisma'] || deps['typeorm'] || deps['mongoose'] || deps['sequelize']) {
+        const instructions = loadAgentInstructions('database');
+        if (instructions) {
+          loadedAgents.push('database');
+          agentInstructions.push(instructions);
+        }
       }
-      if (deps['jest'] || deps['vitest'] || deps['playwright']) {
-        suggestions.push('@tester - Testing expert');
+
+      // Testing focused
+      if (deps['jest'] || deps['vitest'] || deps['playwright'] || deps['cypress']) {
+        const instructions = loadAgentInstructions('tester');
+        if (instructions) {
+          loadedAgents.push('tester');
+          agentInstructions.push(instructions);
+        }
       }
-      if (deps['tailwindcss']) {
-        suggestions.push('@frontend - TailwindCSS expert');
-      }
+
     } catch (e) {}
   }
 
-  // Detect Docker
-  if (fs.existsSync(path.join(cwd, 'Dockerfile')) || fs.existsSync(path.join(cwd, 'docker-compose.yml'))) {
-    suggestions.push('@devops - Docker/CI-CD expert');
+  // Python project
+  if (fs.existsSync(path.join(cwd, 'requirements.txt')) ||
+      fs.existsSync(path.join(cwd, 'pyproject.toml')) ||
+      fs.existsSync(path.join(cwd, 'setup.py'))) {
+    // Load backend agent for Python
+    const instructions = loadAgentInstructions('backend');
+    if (instructions && !loadedAgents.includes('backend')) {
+      loadedAgents.push('backend');
+      agentInstructions.push(instructions);
+    }
   }
 
-  // Detect security concerns
-  if (fs.existsSync(path.join(cwd, '.env.example')) || fs.existsSync(path.join(cwd, 'src', 'auth'))) {
-    suggestions.push('@security - Security expert');
+  // Docker/DevOps project
+  if (fs.existsSync(path.join(cwd, 'Dockerfile')) ||
+      fs.existsSync(path.join(cwd, 'docker-compose.yml')) ||
+      fs.existsSync(path.join(cwd, '.github', 'workflows'))) {
+    const instructions = loadAgentInstructions('devops');
+    if (instructions && !loadedAgents.includes('devops')) {
+      loadedAgents.push('devops');
+      agentInstructions.push(instructions);
+    }
   }
 
-  return suggestions;
+  // Security-sensitive project
+  if (fs.existsSync(path.join(cwd, 'src', 'auth')) ||
+      fs.existsSync(path.join(cwd, 'src', 'security')) ||
+      fs.existsSync(path.join(cwd, '.env.example'))) {
+    const instructions = loadAgentInstructions('security');
+    if (instructions && !loadedAgents.includes('security')) {
+      loadedAgents.push('security');
+      agentInstructions.push(instructions);
+    }
+  }
+
+  // Limit to max 2 agents to avoid context overflow
+  return {
+    loaded: loadedAgents.slice(0, 2),
+    instructions: agentInstructions.slice(0, 2)
+  };
 }
 
-const agentSuggestions = detectProjectContext();
-if (agentSuggestions.length > 0) {
-  additionalContext += `\n## 🤖 Suggested Agents (based on project)\n`;
-  agentSuggestions.forEach(agent => {
-    additionalContext += `- ${agent}\n`;
+const autoLoadedAgents = detectAndLoadAgents();
+
+if (autoLoadedAgents.loaded.length > 0) {
+  additionalContext += `\n## 🤖 AUTO-LOADED AGENTS (based on project)\n`;
+  additionalContext += `**Active Agents:** ${autoLoadedAgents.loaded.map(a => '@' + a).join(', ')}\n\n`;
+  additionalContext += `You have been enhanced with the following specialist knowledge:\n\n`;
+
+  autoLoadedAgents.instructions.forEach((instruction, idx) => {
+    additionalContext += `### Agent: @${autoLoadedAgents.loaded[idx]}\n`;
+    additionalContext += instruction;
+    additionalContext += `\n---\n`;
   });
-  additionalContext += `\nUse \`@agent-name\` to invoke these specialists.\n`;
+
+  additionalContext += `\n**Behavior:** Apply the expertise above automatically when relevant to the task.\n`;
+  additionalContext += `User can still invoke other agents manually with \`@agent-name\`.\n`;
 }
 
 // ============================================

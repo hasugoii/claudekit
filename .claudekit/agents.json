@@ -1,0 +1,106 @@
+{
+  "$schema": "../schemas/agents.schema.json",
+  "version": "1.0.0",
+  "description": "ClaudeKit Agent Auto-Loading Configuration",
+
+  "auto_load": {
+    "enabled": true,
+    "max_agents": 2,
+    "priority": "project_first"
+  },
+
+  "detection_rules": {
+    "frontend": {
+      "description": "Load @frontend when React/Vue/Angular detected",
+      "triggers": {
+        "dependencies": ["react", "next", "vue", "nuxt", "angular", "svelte"],
+        "files": ["src/components", "src/pages", "app/page.tsx"]
+      }
+    },
+    "backend": {
+      "description": "Load @backend when Node.js server frameworks detected",
+      "triggers": {
+        "dependencies": ["express", "fastify", "nestjs", "koa", "hapi"],
+        "files": ["src/api", "src/routes", "src/controllers"]
+      }
+    },
+    "database": {
+      "description": "Load @database when ORM/database tools detected",
+      "triggers": {
+        "dependencies": ["prisma", "typeorm", "mongoose", "sequelize", "drizzle"],
+        "files": ["prisma/schema.prisma", "src/models", "src/entities"]
+      }
+    },
+    "devops": {
+      "description": "Load @devops when Docker/CI-CD detected",
+      "triggers": {
+        "dependencies": [],
+        "files": ["Dockerfile", "docker-compose.yml", ".github/workflows", "kubernetes", "terraform"]
+      }
+    },
+    "security": {
+      "description": "Load @security when auth/security patterns detected",
+      "triggers": {
+        "dependencies": ["passport", "jsonwebtoken", "bcrypt", "helmet"],
+        "files": ["src/auth", "src/security", "src/middleware/auth"]
+      }
+    },
+    "tester": {
+      "description": "Load @tester when testing frameworks detected",
+      "triggers": {
+        "dependencies": ["jest", "vitest", "playwright", "cypress", "mocha"],
+        "files": ["__tests__", "tests", "spec", "e2e"]
+      }
+    },
+    "mobile": {
+      "description": "Load @mobile when mobile frameworks detected",
+      "triggers": {
+        "dependencies": ["react-native", "expo", "@capacitor/core", "cordova"],
+        "files": ["android", "ios", "app.json"]
+      }
+    }
+  },
+
+  "task_overrides": {
+    "description": "Override agents based on task keywords",
+    "rules": [
+      {
+        "keywords": ["debug", "fix", "error", "bug", "issue"],
+        "agents": ["debugger"]
+      },
+      {
+        "keywords": ["test", "spec", "coverage", "e2e"],
+        "agents": ["tester"]
+      },
+      {
+        "keywords": ["deploy", "ci", "cd", "docker", "kubernetes"],
+        "agents": ["devops"]
+      },
+      {
+        "keywords": ["security", "auth", "permission", "vulnerability", "audit"],
+        "agents": ["security"]
+      },
+      {
+        "keywords": ["performance", "optimize", "speed", "memory", "profile"],
+        "agents": ["performance"]
+      },
+      {
+        "keywords": ["design", "ui", "ux", "component", "style", "css"],
+        "agents": ["frontend"]
+      },
+      {
+        "keywords": ["api", "endpoint", "route", "controller", "service"],
+        "agents": ["backend"]
+      },
+      {
+        "keywords": ["schema", "migration", "query", "database", "model"],
+        "agents": ["database"]
+      }
+    ]
+  },
+
+  "manual_override": {
+    "description": "Always allow manual @agent invocation to override auto-loaded agents",
+    "enabled": true
+  }
+}
